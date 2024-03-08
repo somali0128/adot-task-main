@@ -1,8 +1,8 @@
 # Name and metadata of your task
 task_name: 'Adot Search AI'
 author: 'Soma'
-description: "This task assists Adot in enhancing their AI-powered search capabilities. By volunteering your Twitter account for data crawling, you contribute to the training of Adot's AI search, thereby significantly improving its performance and accuracy. Note: Your login credentials are only used to establish a session, and will never leave your device. Rewards are calculated based on the amount of time your node remains online. The longer you stay online, the greater the reward you will receive. The base bounty per round is 500 KOII, which will be divided among users who have made submissions in the last round."
-repositoryUrl: 'https://github.com/koii-network/adot-task-main'
+description: "This task assists Adot in enhancing their AI-powered search capabilities. By volunteering your Twitter account for data crawling, you contribute to the training of Adot's AI search, thereby significantly improving its performance and accuracy. Note: Your login credentials are only used to establish a session, and will never leave your device. Rewards are calculated based on the amount of time your node remains online. The longer you stay online, the greater the reward you will receive. The base bounty per round is 1000 KOII, which will be divided among users who have made submissions in the last round."
+repositoryUrl: 'https://github.com/adotweb3/adot-task-main'
 imageUrl: 'imageUrl'
 
 # network value can be DEVELOPMENT , ARWEAVE or IPFS, Recommended IPFS when deploying to testnet as the cli automatically takes care of uploading the executable with the help of web3.js key
@@ -25,7 +25,7 @@ minimum_stake_amount: 1.9
 # total bounty is not accepted in case of update task
 total_bounty_amount: 1000
 
-bounty_amount_per_round: 500
+bounty_amount_per_round: 1000
 
 #Number of times allowed to re-submit the distribution  list in case the distribution list is audited
 allowed_failed_distributions: 5
@@ -57,7 +57,7 @@ requirementsTags:
 # OPTIONAL variables variables for creating task / REQUIRED variables for update task
 
 # OPTIONAL Only provide the taskId if you are updating the task otherwise leave blank
-task_id: '5hoMYrrdPQneqsQyRGzmoHvKEbR5kA1dN6jdUWFnhgVH'
+task_id: 'ERETtaNNTKkq966tUzUmiAyDTqHEZgSTXK7xMSkc3ChY'
 
 # Provide the description for changes made in new version of task
-migrationDescription: 'Release new version of the Adot Crawler task. Update Task title and description. Stable the connect to IPFS.'
+migrationDescription: 'Release new version of the Adot Crawler task. Update bounty amount per round and fix wrong submission value issue.'
