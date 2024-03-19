@@ -621,7 +621,7 @@ async function storeFiles(data, token) {
     }
     return cid;
   } catch (e) {
-    console.log('Error storing files, missing w3s token', e);
+    console.log('Error storing files, missing spheron token', e);
   }
 }
 
