@@ -60,4 +60,4 @@ requirementsTags:
 task_id: 'ERETtaNNTKkq966tUzUmiAyDTqHEZgSTXK7xMSkc3ChY'
 
 # Provide the description for changes made in new version of task
-migrationDescription: 'Release new version of the Adot Crawler task. Update bounty amount per round and fix wrong submission value issue.'
+migrationDescription: 'Release new version of the Adot Crawler task. Update Spheron bucket name.'
