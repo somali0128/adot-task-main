@@ -15,8 +15,15 @@ const { Connection, PublicKey, Keypair } = require('@_koi/web3.js');
 const taskNodeAdministered = !!TASK_ID;
 const BASE_ROOT_URL = `http://localhost:${TASK_NODE_PORT}/namespace-wrapper`; // TODO - REMOVE?
 const Datastore = require('nedb-promises');
+const {createHash} = require('crypto');
+
+let connection;
 class NamespaceWrapper {
   #db;
+  #testingMainSystemAccount;
+  #testingStakingSystemAccount;
+  #testingTaskState;
+  #testingDistributionList;
 
   constructor() {
     if(taskNodeAdministered){
@@ -212,16 +219,39 @@ class NamespaceWrapper {
     return await genericHandler('nodeSelectionDistributionList');
   }
 
-  async payoutTrigger() {
-    return await genericHandler('payloadTrigger');
+  async payoutTrigger(round) {
+    if (taskNodeAdministered) {
+      return await genericHandler('payloadTrigger', round);
+    } else {
+      console.log(
+        'Payout Trigger only handles possitive flows (Without audits)',
+      );
+      let round = 1;
+      const submissionValAcc =
+        this.#testingDistributionList[round][
+          this.#testingStakingSystemAccount.toBase58()
+        ].submission_value;
+      this.#testingTaskState.available_balances =
+        this.#testingDistributionList[round][submissionValAcc];
+    }
   }
 
   async uploadDistributionList(distributionList, round) {
-    return await genericHandler(
-      'uploadDistributionList',
-      distributionList,
-      round,
-    );
+    if (taskNodeAdministered) {
+      return await genericHandler(
+        'uploadDistributionList',
+        distributionList,
+        round,
+      );
+    } else {
+      if (!this.#testingDistributionList[round])
+        this.#testingDistributionList[round] = {};
+
+      this.#testingDistributionList[round][
+        this.#testingStakingSystemAccount.publicKey.toBase58()
+      ] = Buffer.from(JSON.stringify(distributionList));
+      return true;
+    }
   }
 
   async distributionListSubmissionOnChain(round) {
@@ -487,7 +517,7 @@ async function genericHandler(...args) {
     return { error: err };
   }
 }
-let connection;
+
 const namespaceWrapper = new NamespaceWrapper();
 if (taskNodeAdministered) {
   namespaceWrapper.getRpcUrl().then(rpcUrl => {
