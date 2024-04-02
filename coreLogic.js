@@ -150,7 +150,7 @@ class CoreLogic {
    * @returns
    * @memberof Node
    */
-  async submitDistributionList(round) {
+  submitDistributionList = async round => {
     // This function just upload your generated dustribution List and do the transaction for that
 
     console.log('SubmitDistributionList called');
@@ -172,6 +172,17 @@ class CoreLogic {
     } catch (err) {
       console.log('ERROR IN SUBMIT DISTRIBUTION', err);
     }
+  }
+
+  async selectAndGenerateDistributionList(
+    round,
+    isPreviousRoundFailed = false,
+  ) {
+    await namespaceWrapper.selectAndGenerateDistributionList(
+      this.submitDistributionList,
+      round,
+      isPreviousRoundFailed,
+    );
   }
 
   /**
