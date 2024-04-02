@@ -1,9 +1,9 @@
 # Name and metadata of your task
 task_name: 'Adot Search AI'
-author: 'Soma'
+author: 'Adot'
 description: "This task assists Adot in enhancing their AI-powered search capabilities. By volunteering your Twitter account for data crawling, you contribute to the training of Adot's AI search, thereby significantly improving its performance and accuracy. Note: Your login credentials are only used to establish a session, and will never leave your device. Rewards are calculated based on the amount of time your node remains online. The longer you stay online, the greater the reward you will receive. The base bounty per round is 1000 KOII, which will be divided among users who have made submissions in the last round."
 repositoryUrl: 'https://github.com/adotweb3/adot-task-main'
-imageUrl: 'imageUrl'
+imageUrl: 'https://bafybeidr3cgniq332bgfjzocpk7dgv6fiobvguivknpfynsecloikzyqym.ipfs.sphn.link/adot_task.png'
 
 # network value can be DEVELOPMENT , ARWEAVE or IPFS, Recommended IPFS when deploying to testnet as the cli automatically takes care of uploading the executable with the help of web3.js key
 task_executable_network: 'IPFS'
@@ -23,15 +23,15 @@ minimum_stake_amount: 1.9
 
 # total_bounty_amount cannot be grater than bounty_amount_per_round
 # total bounty is not accepted in case of update task
-total_bounty_amount: 1000
+total_bounty_amount: 100000
 
 bounty_amount_per_round: 1000
 
 #Number of times allowed to re-submit the distribution  list in case the distribution list is audited
-allowed_failed_distributions: 5
+allowed_failed_distributions: 3
 
 #Space in MBs for the account size, that holds the task data
-space: 10
+space: 5
 
 # Note that the value field in RequirementTag is optional, so it is up to you to include it or not based on your use case.
 # To add more global variables and task variables, please refer the type,value,description format shown below
