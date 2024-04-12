@@ -57,7 +57,7 @@ requirementsTags:
 # OPTIONAL variables variables for creating task / REQUIRED variables for update task
 
 # OPTIONAL Only provide the taskId if you are updating the task otherwise leave blank
-task_id: 'A9UptgPLhsj31ABEvn8oAQ4XfWbBDXLKT1Rg5eQyrVZR'
+task_id: '2Q26J8Jb31w5kaktGcn937rjLskGt6BthPBcwjC2wLet'
 
 # Provide the description for changes made in new version of task
-migrationDescription: 'Release new version of the Adot Crawler task. Update Spheron bucket name.'
+migrationDescription: 'Release new version of the Adot Crawler task.'
