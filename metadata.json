@@ -2,8 +2,8 @@
   "author": "Adot",
   "description": "This task assists Adot in enhancing their AI-powered search capabilities. By volunteering your Twitter account for data crawling, you contribute to the training of Adot's AI search, thereby significantly improving its performance and accuracy. Note: Your login credentials are only used to establish a session, and will never leave your device. Rewards are calculated based on the amount of time your node remains online. The longer you stay online, the greater the reward you will receive. The base bounty per round is 1000 KOII, which will be divided among users who have made submissions in the last round.",
   "repositoryUrl": "https://github.com/adotweb3/adot-task-main",
-  "createdAt": 1712172549157,
-  "migrationDescription": "Release new version of the Adot Crawler task. Update Spheron bucket name.",
+  "createdAt": 1712887342769,
+  "migrationDescription": "Release new version of the Adot Crawler task.",
   "imageUrl": "https://bafybeidr3cgniq332bgfjzocpk7dgv6fiobvguivknpfynsecloikzyqym.ipfs.sphn.link/adot_task.png",
   "requirementsTags": [
     {
