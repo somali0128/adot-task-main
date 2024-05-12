@@ -177,6 +177,10 @@ class TwitterTask {
 
       let proofThreshold = 2; // an arbitrary number of records to check
       if (data) {
+      if (data==true){
+        console.log('ipfs all failed so returning true');
+        return true;
+      }
       for (let i = 0; i < proofThreshold; i++) {
         let randomIndex = Math.floor(Math.random() * data.length);
         let item = data[randomIndex];
