@@ -177,10 +177,6 @@ class TwitterTask {
 
       let proofThreshold = 2; // an arbitrary number of records to check
       if (data) {
-      if (data==true){
-        console.log('ipfs all failed so returning true');
-        return true;
-      }
       for (let i = 0; i < proofThreshold; i++) {
         let randomIndex = Math.floor(Math.random() * data.length);
         let item = data[randomIndex];
@@ -197,7 +193,8 @@ class TwitterTask {
         }
       }
     } else {
-      console.log('no data from proof CID');
+      console.log('no data from proof CID. Probably because of all ipfs sites failed.');
+      return true;
     }
       // if none of the random checks fail, return true
       return true;
@@ -250,5 +247,5 @@ const getJSONFromCID = async (
     }
   }
   console.log("Attempted all IPFS sites failed");
-  return true; 
+  return null; 
 };
