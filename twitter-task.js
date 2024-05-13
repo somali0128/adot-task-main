@@ -193,7 +193,8 @@ class TwitterTask {
         }
       }
     } else {
-      console.log('no data from proof CID');
+      console.log('no data from proof CID. Probably because of all ipfs sites failed.');
+      return true;
     }
       // if none of the random checks fail, return true
       return true;
@@ -246,5 +247,5 @@ const getJSONFromCID = async (
     }
   }
   console.log("Attempted all IPFS sites failed");
-  return true; 
+  return null; 
 };
