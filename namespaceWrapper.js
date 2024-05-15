@@ -286,10 +286,11 @@ class NamespaceWrapper {
   // async signEth(transaction) {
   //   return await genericHandler('signEth', transaction);
   // }
-  async getTaskState() {
+  async getTaskState(options) {
     if (taskNodeAdministered) {
-      const response = await genericHandler('getTaskState');
+      const response = await genericHandler('getTaskState', options);
       if (response.error) {
+        console.log('Error in getting task state', response.error);
         return null;
       }
       return response;
@@ -570,6 +571,22 @@ class NamespaceWrapper {
           this.#testingStakingSystemAccount.publicKey.toBase58()
         ].submission_value;
       return this.#testingDistributionList[round][submissionValAcc];
+    }
+  }
+
+
+  async getTaskSubmissionInfo(round) {
+    if (taskNodeAdministered) {
+      const taskSubmissionInfo = await genericHandler(
+        'getTaskSubmissionInfo',
+        round,
+      );
+      if (taskSubmissionInfo.error) {
+        return null;
+      }
+      return taskSubmissionInfo;
+    } else {
+      return this.#testingTaskState.submissions[round];
     }
   }
 
