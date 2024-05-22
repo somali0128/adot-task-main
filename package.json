@@ -18,7 +18,7 @@
   "dependencies": {
     "@_koi/web3.js": "^0.0.6",
     "@_koii/create-task-cli": "^0.1.24",
-    "@spheron/storage": "^2.0.4",
+    "@_koii/storage-task-sdk": "^1.0.3",
     "axios": "^1.3.6",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.0.3",
