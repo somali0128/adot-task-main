@@ -295,10 +295,13 @@ class Twitter extends Adapter {
         } catch (err) {
           console.log(err);
         }
-        const client = new KoiiStorageClient.default();
-        const fileUploadResponse = await client.uploadFile(`${basePath}/${path}`);
+        const client = new KoiiStorageClient.default(undefined, undefined, true);
+        const userStaking = await namespaceWrapper.getSubmitterAccount();
+        console.log(`Uploading ${basePath}/${path}`);
+        const fileUploadResponse = await client.uploadFile(`${basePath}/${path}`,userStaking);
+        console.log(`Uploaded ${basePath}/${path}`);
         const cid = fileUploadResponse.cid;
-        proof_cid = cid;        // console.log(`CID: ${cid}`);
+        proof_cid = cid;
         await this.proofs.create({
           id: 'proof:' + round,
           proof_round: round,
@@ -580,31 +583,31 @@ module.exports = Twitter;
 //   }
 // }
 
-async function storeFiles(data, token) {
-  try {
-    let cid;
-    const client = new KoiiStorageClient.default();
-    let path = `data.json`;
-    let basePath = '';
-    try {
-      basePath = await namespaceWrapper.getBasePath();
-      fs.writeFileSync(`${basePath}/${path}`, JSON.stringify(data));
-    } catch (err) {
-      console.log(err);
-    }
+// async function storeFiles(data, token) {
+//   try {
+//     let cid;
+//     const client = new KoiiStorageClient.default();
+//     let path = `data.json`;
+//     let basePath = '';
+//     try {
+//       basePath = await namespaceWrapper.getBasePath();
+//       fs.writeFileSync(`${basePath}/${path}`, JSON.stringify(data));
+//     } catch (err) {
+//       console.log(err);
+//     }
 
-    try {
-      // console.log(`${basePath}/${path}`)
-      let spheronData = await client.uploadFile(`${basePath}/${path}`);
-      cid = spheronData.cid;
-    } catch (err) {
-      console.log('error uploading to IPFS, trying again', err);
-    }
-    return cid;
-  } catch (e) {
-    console.log('Error storing files, missing spheron token', e);
-  }
-}
+//     try {
+//       // console.log(`${basePath}/${path}`)
+//       let spheronData = await client.uploadFile(`${basePath}/${path}`);
+//       cid = spheronData.cid;
+//     } catch (err) {
+//       console.log('error uploading to IPFS, trying again', err);
+//     }
+//     return cid;
+//   } catch (e) {
+//     console.log('Error storing files, missing spheron token', e);
+//   }
+// }
 
 // async function getAccessToken() {
 //   return process.env.Spheron_Storage;
