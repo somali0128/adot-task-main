@@ -1,5 +1,5 @@
 # Name and metadata of your task
-task_name: 'Adot Search AI'
+task_name: 'Adot Search TEST'
 author: 'Adot'
 description: "This task assists Adot in enhancing their AI-powered search capabilities. By volunteering your Twitter account for data crawling, you contribute to the training of Adot's AI search, thereby significantly improving its performance and accuracy. Note: Your login credentials are only used to establish a session, and will never leave your device. Rewards are calculated based on the amount of time your node remains online. The longer you stay online, the greater the reward you will receive. The base bounty per round is 1000 KOII, which will be divided among users who have made submissions in the last round."
 repositoryUrl: 'https://github.com/adotweb3/adot-task-main'
@@ -23,9 +23,9 @@ minimum_stake_amount: 1.9
 
 # total_bounty_amount cannot be grater than bounty_amount_per_round
 # total bounty is not accepted in case of update task
-total_bounty_amount: 100000
+total_bounty_amount: 20
 
-bounty_amount_per_round: 1000
+bounty_amount_per_round: 1
 
 #Number of times allowed to re-submit the distribution  list in case the distribution list is audited
 allowed_failed_distributions: 5
@@ -53,7 +53,7 @@ requirementsTags:
 # OPTIONAL variables variables for creating task / REQUIRED variables for update task
 
 # OPTIONAL Only provide the taskId if you are updating the task otherwise leave blank
-task_id: 'GU5ra4jJdrfCqctpupMfUoBMx46ejH5koQfkC935mrq9'
+task_id: 'HLNeUSKrM9xmu54dJirEUuWpUuSZ48d4HqsB7HZ8mCHz'
 
 # Provide the description for changes made in new version of task
 migrationDescription: 'Release new version of the Adot task.'
