@@ -300,7 +300,13 @@ class Twitter extends Adapter {
         console.log(`Uploading ${basePath}/${path}`);
         const fileUploadResponse = await client.uploadFile(`${basePath}/${path}`,userStaking);
         console.log(`Uploaded ${basePath}/${path}`);
-        const cid = fileUploadResponse.cid;
+        let cid;
+        try{
+          cid = fileUploadResponse.cid;
+        }catch(e){
+          cid = null;
+          console.log("Upload to our cid failed");
+        }
         proof_cid = cid;
         await this.proofs.create({
           id: 'proof:' + round,
