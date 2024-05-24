@@ -418,13 +418,6 @@ class NamespaceWrapper {
     }
   }
 
-  async nodeSelectionDistributionList() {
-    if (taskNodeAdministered) {
-      return await genericHandler('nodeSelectionDistributionList');
-    } else {
-      return this.#testingStakingSystemAccount.publicKey.toBase58();
-    }
-  }
 
   async payoutTrigger(round) {
     if (taskNodeAdministered) {
@@ -550,9 +543,7 @@ class NamespaceWrapper {
 
   // Wrapper for selection of node to prepare a distribution list
 
-  async nodeSelectionDistributionList(round) {
-    return await genericHandler('nodeSelectionDistributionList', round);
-  }
+
 
   async getDistributionList(publicKey, round) {
     if (taskNodeAdministered) {
