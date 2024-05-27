@@ -3,7 +3,7 @@ task_name: 'Adot Search TEST'
 author: 'Adot'
 description: "This task assists Adot in enhancing their AI-powered search capabilities. By volunteering your Twitter account for data crawling, you contribute to the training of Adot's AI search, thereby significantly improving its performance and accuracy. Note: Your login credentials are only used to establish a session, and will never leave your device. Rewards are calculated based on the amount of time your node remains online. The longer you stay online, the greater the reward you will receive. The base bounty per round is 1000 KOII, which will be divided among users who have made submissions in the last round."
 repositoryUrl: 'https://github.com/adotweb3/adot-task-main'
-imageUrl: 'https://bafybeidr3cgniq332bgfjzocpk7dgv6fiobvguivknpfynsecloikzyqym.ipfs.sphn.link/adot_task.png'
+imageUrl: 'https://bafybeidr3cgniq332bgfjzocpk7dgv6fiobvguivknpfynsecloikzyqym.ipfs.w3s.link/adot_task.png'
 
 # network value can be DEVELOPMENT , ARWEAVE or IPFS, Recommended IPFS when deploying to testnet as the cli automatically takes care of uploading the executable with the help of web3.js key
 task_executable_network: 'IPFS'
@@ -23,9 +23,9 @@ minimum_stake_amount: 1.9
 
 # total_bounty_amount cannot be grater than bounty_amount_per_round
 # total bounty is not accepted in case of update task
-total_bounty_amount: 20
+total_bounty_amount: 10000
 
-bounty_amount_per_round: 1
+bounty_amount_per_round: 2000
 
 #Number of times allowed to re-submit the distribution  list in case the distribution list is audited
 allowed_failed_distributions: 5
