@@ -228,7 +228,9 @@ const getJSONFromCID = async (
   console.log(urllist);
   const client = new KoiiStorageClient(undefined, undefined, true);
   try {
-    const data = await client.getFile(cid, fileName);
+    const blob = await client.getFile(cid, fileName);
+    const text = await blob.text(); // Convert Blob to text
+    const data = JSON.parse(text); // Parse text to JSON
     return data;
   } catch (error) {
     console.log(`Error fetching file from Koii IPFS: ${error.message}`);
@@ -240,11 +242,8 @@ const getJSONFromCID = async (
         const response = await axios.get(url);
         if (response.status === 200) {
           return response.data;
-        } else {
-          // console.log(`Attempt ${attempt} at IPFS ${url}: status ${response.status}`);
         }
       } catch (error) {
-        // console.log(`Attempt ${attempt} at IPFS ${url} failed: ${error.message}`);
         if (attempt < maxRetries) {
           await sleep(retryDelay);
         }
@@ -254,3 +253,5 @@ const getJSONFromCID = async (
   console.log("Attempted all IPFS sites failed");
   return null; 
 };
+
+getJSONFromCID('bafybeid6n542lfmo43upm7efvinogtizj3wbkhmdga5kwqu3fkmman5s6a', 'dataList.json');
