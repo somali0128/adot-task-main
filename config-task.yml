@@ -53,7 +53,7 @@ requirementsTags:
 # OPTIONAL variables variables for creating task / REQUIRED variables for update task
 
 # OPTIONAL Only provide the taskId if you are updating the task otherwise leave blank
-task_id: 'wJme8ZBopdCj54J556AxZeysBjDngnFbzDrKtJHg3E4'
+task_id: '6R5CRCZRQ3KHHxtzrJCPp1o8ycQxLFH92kJ7Bt8FetKy'
 
 # Provide the description for changes made in new version of task
 migrationDescription: 'Remove Spheron Requirement.'
