@@ -742,10 +742,10 @@ class NamespaceWrapper {
         console.log('FOR CANDIDATE KEY', candidatePublicKey);
         let candidateKeyPairPublicKey = new PublicKey(keys[i]);
           try {
-            console.log(
-              'DISTRIBUTION SUBMISSION VALUE TO CHECK',
-              values[i].submission_value,
-            );
+            // console.log(
+            //   'DISTRIBUTION SUBMISSION VALUE TO CHECK',
+            //   values[i].submission_value,
+            // );
 
                 isValid = await validateDistribution(
                 values[i].submission_value,
