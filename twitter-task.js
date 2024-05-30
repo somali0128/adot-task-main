@@ -217,41 +217,30 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const getJSONFromCID = async (
   cid,
   fileName,
-  maxRetries = 4,
-  retryDelay = 3000,
 ) => {
   const urllist = [
-    `https://${cid}.ipfs.4everland.io/${fileName}`,
-    `https://cloudflare-ipfs.com/ipfs/${cid}/${fileName}`,
-    `https://${cid}.ipfs.dweb.link/${fileName}`,
+    `https://${cid}.ipfs.w3s.link/${fileName}`
   ];
-  console.log(urllist);
-  const client = new KoiiStorageClient(undefined, undefined, true);
   try {
+    const client = new KoiiStorageClient(undefined, undefined, true);
     const blob = await client.getFile(cid, fileName);
     const text = await blob.text(); // Convert Blob to text
     const data = JSON.parse(text); // Parse text to JSON
     return data;
-  } catch (error) {
+  }  catch (error) {
     console.log(`Error fetching file from Koii IPFS: ${error.message}`);
   }
   for (const url of urllist) {
-    console.log(`Trying URL: ${url}`);  
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        const response = await axios.get(url);
-        if (response.status === 200) {
-          return response.data;
-        }
-      } catch (error) {
-        if (attempt < maxRetries) {
-          await sleep(retryDelay);
-        }
+    console.log(`Trying URL: ${url}`);
+    try {
+      const response = await axios.get(url);
+      if (response.status === 200) {
+        return response.data;
       }
+    } catch (error) {
     }
   }
   console.log("Attempted all IPFS sites failed");
   return null; 
 };
 
-getJSONFromCID('bafybeid6n542lfmo43upm7efvinogtizj3wbkhmdga5kwqu3fkmman5s6a', 'dataList.json');
