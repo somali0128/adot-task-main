@@ -296,12 +296,12 @@ class Twitter extends Adapter {
           console.log(err);
         }
         try{
-        const client = new KoiiStorageClient(undefined, undefined, false);
-        const userStaking = await namespaceWrapper.getSubmitterAccount();
-        console.log(`Uploading ${basePath}/${path}`);
-        const fileUploadResponse = await client.uploadFile(`${basePath}/${path}`,userStaking);
-        console.log(`Uploaded ${basePath}/${path}`);
-        let cid;
+          const client = new KoiiStorageClient(undefined, undefined, false);
+          const userStaking = await namespaceWrapper.getSubmitterAccount();
+          console.log(`Uploading ${basePath}/${path}`);
+          const fileUploadResponse = await client.uploadFile(`${basePath}/${path}`,userStaking);
+          console.log(`Uploaded ${basePath}/${path}`);
+          let cid;
         try{
           cid = fileUploadResponse.cid;
         }catch(e){
