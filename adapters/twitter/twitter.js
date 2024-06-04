@@ -514,13 +514,10 @@ class Twitter extends Adapter {
           }
         }
         try {
-          // console.log(
-          //   'round check',
-          //   this.round,
-          //   await namespaceWrapper.getRound(),
-          // );
-          if (this.round !== (await namespaceWrapper.getRound())) {
-            console.log('round changed, closed old browser');
+          let dataLength = (await this.cids.getList({ round: round })).length;
+          console.log('Already scraped', dataLength, 'in round', round);
+          if (dataLength > 120) {
+            console.log('reach maixmum data per round, closed old browser');
             this.browser.close();
             break;
           }
