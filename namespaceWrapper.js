@@ -14,7 +14,7 @@ const { TASK_ID, SECRET_KEY, TASK_NODE_PORT } = require('./init');
 const { Connection, PublicKey, Keypair } = require('@_koi/web3.js');
 const Datastore = require('nedb-promises');
 const {createHash} = require('crypto');
-
+const semver = require('semver');
 const taskNodeAdministered = !!TASK_ID;
 const BASE_ROOT_URL = `http://localhost:${TASK_NODE_PORT}/namespace-wrapper`;
 let connection;
@@ -286,10 +286,11 @@ class NamespaceWrapper {
   // async signEth(transaction) {
   //   return await genericHandler('signEth', transaction);
   // }
-  async getTaskState() {
+  async getTaskState(options) {
     if (taskNodeAdministered) {
-      const response = await genericHandler('getTaskState');
+      const response = await genericHandler('getTaskState', options);
       if (response.error) {
+        console.log('Error in getting task state', response.error);
         return null;
       }
       return response;
@@ -417,13 +418,6 @@ class NamespaceWrapper {
     }
   }
 
-  async nodeSelectionDistributionList() {
-    if (taskNodeAdministered) {
-      return await genericHandler('nodeSelectionDistributionList');
-    } else {
-      return this.#testingStakingSystemAccount.publicKey.toBase58();
-    }
-  }
 
   async payoutTrigger(round) {
     if (taskNodeAdministered) {
@@ -549,9 +543,7 @@ class NamespaceWrapper {
 
   // Wrapper for selection of node to prepare a distribution list
 
-  async nodeSelectionDistributionList(round) {
-    return await genericHandler('nodeSelectionDistributionList', round);
-  }
+
 
   async getDistributionList(publicKey, round) {
     if (taskNodeAdministered) {
@@ -573,13 +565,38 @@ class NamespaceWrapper {
     }
   }
 
+
+  async getTaskSubmissionInfo(round, forcefetch = false) {
+    if (taskNodeAdministered) {
+      const taskSubmissionInfo = await genericHandler(
+        "getTaskSubmissionInfo",
+        round,
+        forcefetch,
+      );
+      if (!taskSubmissionInfo || taskSubmissionInfo.error) {
+        return null;
+      }
+      return taskSubmissionInfo;
+    } else {
+      return this.#testingTaskState.submissions[round];
+    }
+  }
+
   async validateAndVoteOnNodes(validate, round) {
     console.log('******/  IN VOTING /******');
-    const taskAccountDataJSON = await this.getTaskState();
+    let taskAccountDataJSON = null;
+    try {
+      taskAccountDataJSON = await this.getTaskSubmissionInfo(round);
+    } catch (error) {
+      console.error('Error in getting submissions for the round', error);
+    }
+    if (taskAccountDataJSON == null) {
+      console.log('No submissions found for the round', round);
+      return;
+    }
 
     console.log(
-      `Fetching the submissions of round ${round}`,
-      taskAccountDataJSON.submissions[round],
+      `Fetching the submissions of round ${round}`
     );
     const submissions = taskAccountDataJSON.submissions[round];
     if (submissions == null) {
@@ -658,10 +675,43 @@ class NamespaceWrapper {
     }
   }
 
-  async validateAndVoteOnDistributionList(validateDistribution, round, isPreviousRoundFailed = false) {
+  async getTaskDistributionInfo(round) {
+    if (taskNodeAdministered) {
+      const taskDistributionInfo = await genericHandler(
+        'getTaskDistributionInfo',
+        round,
+      );
+      if (!taskDistributionInfo || taskDistributionInfo.error) {
+        return null;
+      }
+      return taskDistributionInfo;
+    } else {
+      return this.#testingTaskState.distribution_rewards_submission[round];
+    }
+  }
+
+  async validateAndVoteOnDistributionList(
+    validateDistribution,
+    round,
+    isPreviousRoundFailed = false
+  ) {
     // await this.checkVoteStatus();
     console.log('******/  IN VOTING OF DISTRIBUTION LIST /******');
-    const taskAccountDataJSON = await this.getTaskState();
+    let tasknodeVersionSatisfied = false;
+    const taskNodeVersion = await this.getTaskNodeVersion();
+    if (semver.gte(taskNodeVersion, "1.11.19")) {
+      tasknodeVersionSatisfied = true;
+    } 
+    let taskAccountDataJSON = null;
+    try {
+      taskAccountDataJSON = await this.getTaskDistributionInfo(round);
+    } catch (error) {
+      console.error('Error in getting distributions for the round', error);
+    }
+    if (taskAccountDataJSON == null) {
+      console.log('No distribution submissions found for the round', round);
+      return;
+    }
     console.log(
       `Fetching the Distribution submissions of round ${round}`,
       taskAccountDataJSON.distribution_rewards_submission[round],
@@ -698,24 +748,18 @@ class NamespaceWrapper {
         console.log('FOR CANDIDATE KEY', candidatePublicKey);
         let candidateKeyPairPublicKey = new PublicKey(keys[i]);
           try {
-            console.log(
-              'DISTRIBUTION SUBMISSION VALUE TO CHECK',
-              values[i].submission_value,
-            );
-            if(selectedNode != candidatePublicKey) {
-              console.log(
-                `${candidatePublicKey} IS NOT A SELECTED NODE FOR DISTRIBUTION ROUND ${round}`,
-              );
-              isValid = false;
-            }
-            else {
+            // console.log(
+            //   'DISTRIBUTION SUBMISSION VALUE TO CHECK',
+            //   values[i].submission_value,
+            // );
+
                 isValid = await validateDistribution(
                 values[i].submission_value,
                 round,
                 );
-            }
 
-            console.log(`Voting ${isValid} to ${candidatePublicKey}`);
+
+
 
             if (isValid) {
               // check for the submissions_audit_trigger , if it exists then vote true on that otherwise do nothing
@@ -745,7 +789,7 @@ class NamespaceWrapper {
                   response,
                 );
               }
-            } else if (isValid == false) {
+            } else if (isValid == false&& tasknodeVersionSatisfied) {
               // Call auditSubmission function and isValid is passed as false
               console.log('RAISING AUDIT / VOTING FALSE ON DISTRIBUTION');
               const response = await this.distributionListAuditSubmission(
@@ -763,6 +807,18 @@ class NamespaceWrapper {
             console.log('ERROR IN ELSE CONDITION FOR DISTRIBUTION', err);
           }
       }
+    }
+  }
+  async getTaskNodeVersion() {
+    if (taskNodeAdministered) {
+      try {
+        return await genericHandler("getTaskNodeVersion");
+      } catch (error) {
+        console.error("Error getting task node version", error);
+        return;
+      }
+    } else {
+      return "1.11.19";
     }
   }
   async getTaskLevelDBPath() {
@@ -787,22 +843,10 @@ class NamespaceWrapper {
   async getAverageSlotTime() {
     if (taskNodeAdministered) {
       try {
-        const current_rpc = await namespaceWrapper.getRpcUrl();
-         const current_connection = new Connection(current_rpc);
-        const slotSamples = await current_connection.getRecentPerformanceSamples(60);
-        let samplesLength = slotSamples.length;
-
-        const averageSlotTime =
-          slotSamples.reduce((avgSlotTime, slotSample) => {
-            return (
-              avgSlotTime +
-              1000 * (slotSample.samplePeriodSecs / slotSample.numSlots)
-            );
-          }, 0) / samplesLength;
-        return averageSlotTime;
+        return await genericHandler('getAverageSlotTime');
       } catch (error) {
         console.error('Error getting average slot time', error);
-        return null;
+        return 400;
       }
     } else {
       return 400;
@@ -810,7 +854,18 @@ class NamespaceWrapper {
   }
 
   async nodeSelectionDistributionList(round, isPreviousFailed) {
-    const taskAccountDataJSON = await namespaceWrapper.getTaskState();
+    let taskAccountDataJSON = null;
+    try {
+      taskAccountDataJSON = await this.getTaskSubmissionInfo(round, true);
+    } catch (error) {
+      console.error('Task submission not found', error);
+      return;
+    }
+
+    if (taskAccountDataJSON == null) {
+      console.error('Task state not found');
+      return;
+    }
     // console.log('EXPECTED ROUND', round);
 
     const submissions = taskAccountDataJSON.submissions[round];
@@ -818,43 +873,77 @@ class NamespaceWrapper {
       console.log('No submisssions found in N-1 round');
       return 'No submisssions found in N-1 round';
     } else {
-      const values = Object.values(submissions);
-      // console.log('VALUES', values);
-      const keys = Object.keys(submissions);
-      // console.log('KEYS', keys);
-      let size = values.length;
-      // console.log('Submissions from N-2  round: ', keys, values, size);
+      // getting last 3 submissions for the rounds
+      let keys;
+      const latestRounds = [round, round - 1, round - 2].filter(r => r >= 0);
 
-      // Check the keys i.e if the submitter shall be excluded or not
+      const promises = latestRounds.map(async r => {
+        if (r == round) {
+          return new Set(Object.keys(submissions));
+        } else {
+      let roundSubmissions = null;
+      try {
+        roundSubmissions = await this.getTaskSubmissionInfo(r, true);
+        if (roundSubmissions && roundSubmissions.submissions[r]) {
+          return new Set(Object.keys(roundSubmissions.submissions[r]));
+        }
+      } catch (error) {
+        console.error('Error in getting submissions for the round', error);
+      }
+      return new Set();
+    }
+  });
 
-      const audit_record = taskAccountDataJSON.distributions_audit_record;
-      // console.log('AUDIT RECORD');
+  const keySets = await Promise.all(promises);
+
+  // Find the keys present in all the rounds
+  keys =
+    keySets.length > 0
+      ? [...keySets[0]].filter(key => keySets.every(set => set.has(key)))
+      : [];
+  if (keys.length == 0) {
+    console.log('No common keys found in last 3 rounds');
+    keys = Object.keys(submissions);
+  }
+  // console.log('KEYS', keys.length);
+  const values = keys.map(key => submissions[key]);
+
+  let size = keys.length;
+  console.log('Submissions from N-2  round: ', size);
+
+  // Check the keys i.e if the submitter shall be excluded or not
+  try {
+    const distributionData = await this.getTaskDistributionInfo(round);
+    const audit_record = distributionData?.distributions_audit_record;
+    if (audit_record && audit_record[round] == 'PayoutFailed') {
       // console.log('ROUND DATA', audit_record[round]);
+      // console.log(
+      //   'SUBMITTER LIST',
+      //   distributionData.distribution_rewards_submission[round],
+      // );
+      const submitterList =
+        distributionData.distribution_rewards_submission[round];
+      const submitterKeys = Object.keys(submitterList);
+      // console.log('SUBMITTER KEYS', submitterKeys);
+      const submitterSize = submitterKeys.length;
+      // console.log('SUBMITTER SIZE', submitterSize);
 
-      if (audit_record[round] == 'PayoutFailed') {
-        // console.log(
-        //   'SUBMITTER LIST',
-        //   taskAccountDataJSON.distribution_rewards_submission[round],
-        // );
-        const submitterList =
-          taskAccountDataJSON.distribution_rewards_submission[round];
-        const submitterSize = Object.keys(submitterList).length;
-        // console.log('SUBMITTER SIZE', submitterSize);
-        const submitterKeys = Object.keys(submitterList);
-        // console.log('SUBMITTER KEYS', submitterKeys);
-
-        for (let j = 0; j < submitterSize; j++) {
-          // console.log('SUBMITTER KEY CANDIDATE', submitterKeys[j]);
-          const id = keys.indexOf(submitterKeys[j]);
-          // console.log('ID', id);
+      for (let j = 0; j < submitterSize; j++) {
+        // console.log('SUBMITTER KEY CANDIDATE', submitterKeys[j]);
+        const id = keys.indexOf(submitterKeys[j]);
+        // console.log('ID', id);
+        if (id != -1) {
           keys.splice(id, 1);
           values.splice(id, 1);
           size--;
         }
-
-        // console.log('KEYS', keys);
       }
 
+      // console.log('KEYS FOR HASH CALC', keys.length);
+    }
+  } catch (error) {
+    console.log('Error in getting distribution data', error);
+  }
       // calculating the digest
 
       const ValuesString = JSON.stringify(values);
@@ -948,10 +1037,15 @@ class NamespaceWrapper {
     );
     console.log('Selected Node', selectedNode);
     const submitPubKey = await this.getSubmitterAccount();
-    if (selectedNode == undefined || submitPubKey == undefined) return;
+    if (
+      selectedNode == undefined ||
+      selectedNode == '' ||
+      submitPubKey == undefined
+    )
+      return;
     if (selectedNode == submitPubKey?.publicKey.toBase58()) {
       await submitDistributionList(round);
-      const taskState = await this.getTaskState();
+      const taskState = await this.getTaskState({});
       if (taskState == null) {
         console.error('Task state not found');
         return;
@@ -989,9 +1083,16 @@ async function genericHandler(...args) {
       return null;
     }
   } catch (err) {
-    console.error(`Error in genericHandler: "${args[0]}"`, err.message);
-    console.error(err?.response?.data);
-    return { error: err };
+    const responseData = err?.response?.data?.message;
+    if ((args[0] === 'getTaskSubmissionInfo' || args[0] === 'getTaskDistributionInfo') && 
+    responseData && typeof responseData === 'string' && responseData.includes('Task does not have any')) {
+      console.log(`Error in genericHandler: "${args[0]}"`, err.message);
+      console.log(err?.response?.data);
+    }else{
+      console.error(`Error in genericHandler: "${args[0]}"`, err.message);
+      console.error(err?.response?.data);
+      return { error: err };
+    }
   }
 }
 
