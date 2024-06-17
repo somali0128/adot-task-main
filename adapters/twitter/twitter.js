@@ -75,7 +75,7 @@ class Twitter extends Adapter {
         console.log('Old browser closed');
       }
       const options = {};
-      const userDataDir = path.join(__dirname, 'puppeteer_cache_koii_twitter_archive');
+      const userDataDir = path.join(__dirname, 'puppeteer_cache_koii_twitter_adot');
       const stats = await PCR(options);
       console.log(
         '*****************************************CALLED PURCHROMIUM RESOLVER*****************************************',
