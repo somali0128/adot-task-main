@@ -14,7 +14,7 @@ const TASK_ID = process.argv[3];
  * This will be the PORT on which the this task is expected to run the express server coming from the task node running this task.
  * As all communication via the task node and this task will be done on this port.
  */
-const EXPRESS_PORT = process.argv[4] || 10000;
+const EXPRESS_PORT = process.argv[4] || 10001;
 
 const LogLevel = {
   Log: 'log',

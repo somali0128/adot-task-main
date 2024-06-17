@@ -16,3 +16,4 @@ twitter-db
 .DS_Store
 localKOIIDB.db
 run.sh
+puppeteer_cache_koii_twitter_adot

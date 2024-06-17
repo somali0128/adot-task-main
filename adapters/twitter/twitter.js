@@ -513,7 +513,7 @@ class Twitter extends Adapter {
                 // Store the item in the database
                 // const cid = await storeFiles(data, this.w3sKey);
                 // const cid = 'testcid';
-                console.log(`Storing data for ${data.tweets_id}`);
+                // console.log(`Storing data for ${data.tweets_id}`);
                 this.cids.create({
                   id: data.tweets_id,
                   round: round,
