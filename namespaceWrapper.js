@@ -3,9 +3,9 @@
  * @description This file contains the namespace wrapper class
  *             which is used to interact with the namespace
  *             and the task node
- * 
+ *
  *             Note: Generally, it is not necessary to modify this file
- *  
+ *
  * @version 1.0.0
  */
 
@@ -13,7 +13,7 @@ const { default: axios } = require('axios');
 const { TASK_ID, SECRET_KEY, TASK_NODE_PORT } = require('./init');
 const { Connection, PublicKey, Keypair } = require('@_koi/web3.js');
 const Datastore = require('nedb-promises');
-const {createHash} = require('crypto');
+const { createHash } = require('crypto');
 const semver = require('semver');
 const taskNodeAdministered = !!TASK_ID;
 const BASE_ROOT_URL = `http://localhost:${TASK_NODE_PORT}/namespace-wrapper`;
@@ -418,7 +418,6 @@ class NamespaceWrapper {
     }
   }
 
-
   async payoutTrigger(round) {
     if (taskNodeAdministered) {
       return await genericHandler('payloadTrigger', round);
@@ -541,10 +540,6 @@ class NamespaceWrapper {
     }
   }
 
-  // Wrapper for selection of node to prepare a distribution list
-
-
-
   async getDistributionList(publicKey, round) {
     if (taskNodeAdministered) {
       const response = await genericHandler(
@@ -565,11 +560,10 @@ class NamespaceWrapper {
     }
   }
 
-
   async getTaskSubmissionInfo(round, forcefetch = false) {
     if (taskNodeAdministered) {
       const taskSubmissionInfo = await genericHandler(
-        "getTaskSubmissionInfo",
+        'getTaskSubmissionInfo',
         round,
         forcefetch,
       );
@@ -595,9 +589,7 @@ class NamespaceWrapper {
       return;
     }
 
-    console.log(
-      `Fetching the submissions of round ${round}`
-    );
+    console.log(`Fetching the submissions of round ${round}`);
     const submissions = taskAccountDataJSON.submissions[round];
     if (submissions == null) {
       console.log(`No submisssions found in round ${round}`);
@@ -606,21 +598,20 @@ class NamespaceWrapper {
       const keys = Object.keys(submissions);
       const values = Object.values(submissions);
       const size = values.length;
-       // console.log('Submissions from last round: ', keys, values, size);
-       const numberOfChecks = Math.min(5, size);
+      // console.log('Submissions from last round: ', keys, values, size);
+      const numberOfChecks = Math.min(5, size);
 
-       let uniqueIndices = new Set();
- 
-       // Populate uniqueIndices with unique random numbers
-       while (uniqueIndices.size < numberOfChecks) {
-         const randomIndex = Math.floor(Math.random() * size);
-         uniqueIndices.add(randomIndex);
-       }
+      let uniqueIndices = new Set();
+
+      // Populate uniqueIndices with unique random numbers
+      while (uniqueIndices.size < numberOfChecks) {
+        const randomIndex = Math.floor(Math.random() * size);
+        uniqueIndices.add(randomIndex);
+      }
       let isValid;
       const submitterAccountKeyPair = await this.getSubmitterAccount();
       const submitterPubkey = submitterAccountKeyPair.publicKey.toBase58();
       for (let index of uniqueIndices) {
-
         let candidatePublicKey = keys[index];
         // console.log('FOR CANDIDATE KEY', candidatePublicKey);
         let candidateKeyPairPublicKey = new PublicKey(keys[index]);
@@ -632,7 +623,7 @@ class NamespaceWrapper {
               'SUBMISSION VALUE TO CHECK',
               values[index].submission_value,
             );
-           
+
             isValid = await validate(values[index].submission_value, round);
             if (isValid) {
               // check for the submissions_audit_trigger , if it exists then vote true on that otherwise do nothing
@@ -693,15 +684,15 @@ class NamespaceWrapper {
   async validateAndVoteOnDistributionList(
     validateDistribution,
     round,
-    isPreviousRoundFailed = false
+    isPreviousRoundFailed = false,
   ) {
     // await this.checkVoteStatus();
     console.log('******/  IN VOTING OF DISTRIBUTION LIST /******');
     let tasknodeVersionSatisfied = false;
     const taskNodeVersion = await this.getTaskNodeVersion();
-    if (semver.gte(taskNodeVersion, "1.11.19")) {
+    if (semver.gte(taskNodeVersion, '1.11.19')) {
       tasknodeVersionSatisfied = true;
-    } 
+    }
     let taskAccountDataJSON = null;
     try {
       taskAccountDataJSON = await this.getTaskDistributionInfo(round);
@@ -738,7 +729,7 @@ class NamespaceWrapper {
         round,
         isPreviousRoundFailed,
       );
-      console.log('SELECTED NODE FOR AUDIT', selectedNode);
+      // console.log('SELECTED NODE FOR AUDIT', selectedNode);
       if (selectedNode == submitterPubkey) {
         console.log('YOU CANNOT VOTE ON YOUR OWN DISTRIBUTION SUBMISSIONS');
         return;
@@ -747,51 +738,34 @@ class NamespaceWrapper {
         let candidatePublicKey = keys[i];
         console.log('FOR CANDIDATE KEY', candidatePublicKey);
         let candidateKeyPairPublicKey = new PublicKey(keys[i]);
-          try {
+        try {
+          // console.log(
+          //   'DISTRIBUTION SUBMISSION VALUE TO CHECK',
+          //   values[i].submission_value,
+          // );
+
+          isValid = await validateDistribution(
+            values[i].submission_value,
+            round,
+          );
+
+          if (isValid) {
+            // check for the submissions_audit_trigger , if it exists then vote true on that otherwise do nothing
+            const distributions_audit_trigger =
+              taskAccountDataJSON.distributions_audit_trigger[round];
+            console.log(
+              'SUBMIT DISTRIBUTION AUDIT TRIGGER',
+              distributions_audit_trigger,
+            );
             // console.log(
-            //   'DISTRIBUTION SUBMISSION VALUE TO CHECK',
-            //   values[i].submission_value,
+            //   "CANDIDATE PUBKEY CHECK IN AUDIT TRIGGER",
+            //   distributions_audit_trigger[candidatePublicKey]
             // );
-
-                isValid = await validateDistribution(
-                values[i].submission_value,
-                round,
-                );
-
-
-
-
-            if (isValid) {
-              // check for the submissions_audit_trigger , if it exists then vote true on that otherwise do nothing
-              const distributions_audit_trigger =
-                taskAccountDataJSON.distributions_audit_trigger[round];
-              console.log(
-                'SUBMIT DISTRIBUTION AUDIT TRIGGER',
-                distributions_audit_trigger,
-              );
-              // console.log(
-              //   "CANDIDATE PUBKEY CHECK IN AUDIT TRIGGER",
-              //   distributions_audit_trigger[candidatePublicKey]
-              // );
-              if (
-                distributions_audit_trigger &&
-                distributions_audit_trigger[candidatePublicKey]
-              ) {
-                console.log('VOTING TRUE ON DISTRIBUTION AUDIT');
-                const response = await this.distributionListAuditSubmission(
-                  candidateKeyPairPublicKey,
-                  isValid,
-                  submitterAccountKeyPair,
-                  round,
-                );
-                console.log(
-                  'RESPONSE FROM DISTRIBUTION AUDIT FUNCTION',
-                  response,
-                );
-              }
-            } else if (isValid == false&& tasknodeVersionSatisfied) {
-              // Call auditSubmission function and isValid is passed as false
-              console.log('RAISING AUDIT / VOTING FALSE ON DISTRIBUTION');
+            if (
+              distributions_audit_trigger &&
+              distributions_audit_trigger[candidatePublicKey]
+            ) {
+              console.log('VOTING TRUE ON DISTRIBUTION AUDIT');
               const response = await this.distributionListAuditSubmission(
                 candidateKeyPairPublicKey,
                 isValid,
@@ -803,22 +777,33 @@ class NamespaceWrapper {
                 response,
               );
             }
-          } catch (err) {
-            console.log('ERROR IN ELSE CONDITION FOR DISTRIBUTION', err);
+          } else if (isValid == false && tasknodeVersionSatisfied) {
+            // Call auditSubmission function and isValid is passed as false
+            console.log('RAISING AUDIT / VOTING FALSE ON DISTRIBUTION');
+            const response = await this.distributionListAuditSubmission(
+              candidateKeyPairPublicKey,
+              isValid,
+              submitterAccountKeyPair,
+              round,
+            );
+            console.log('RESPONSE FROM DISTRIBUTION AUDIT FUNCTION', response);
           }
+        } catch (err) {
+          console.log('ERROR IN ELSE CONDITION FOR DISTRIBUTION', err);
+        }
       }
     }
   }
   async getTaskNodeVersion() {
     if (taskNodeAdministered) {
       try {
-        return await genericHandler("getTaskNodeVersion");
+        return await genericHandler('getTaskNodeVersion');
       } catch (error) {
-        console.error("Error getting task node version", error);
+        console.error('Error getting task node version', error);
         return;
       }
     } else {
-      return "1.11.19";
+      return '1.11.19';
     }
   }
   async getTaskLevelDBPath() {
@@ -881,69 +866,69 @@ class NamespaceWrapper {
         if (r == round) {
           return new Set(Object.keys(submissions));
         } else {
-      let roundSubmissions = null;
+          let roundSubmissions = null;
+          try {
+            roundSubmissions = await this.getTaskSubmissionInfo(r, true);
+            if (roundSubmissions && roundSubmissions.submissions[r]) {
+              return new Set(Object.keys(roundSubmissions.submissions[r]));
+            }
+          } catch (error) {
+            console.error('Error in getting submissions for the round', error);
+          }
+          return new Set();
+        }
+      });
+
+      const keySets = await Promise.all(promises);
+
+      // Find the keys present in all the rounds
+      keys =
+        keySets.length > 0
+          ? [...keySets[0]].filter(key => keySets.every(set => set.has(key)))
+          : [];
+      if (keys.length == 0) {
+        console.log('No common keys found in last 3 rounds');
+        keys = Object.keys(submissions);
+      }
+      // console.log('KEYS', keys.length);
+      const values = keys.map(key => submissions[key]);
+
+      let size = keys.length;
+      console.log('Submissions from N-2  round: ', size);
+
+      // Check the keys i.e if the submitter shall be excluded or not
       try {
-        roundSubmissions = await this.getTaskSubmissionInfo(r, true);
-        if (roundSubmissions && roundSubmissions.submissions[r]) {
-          return new Set(Object.keys(roundSubmissions.submissions[r]));
+        const distributionData = await this.getTaskDistributionInfo(round);
+        const audit_record = distributionData?.distributions_audit_record;
+        if (audit_record && audit_record[round] == 'PayoutFailed') {
+          // console.log('ROUND DATA', audit_record[round]);
+          // console.log(
+          //   'SUBMITTER LIST',
+          //   distributionData.distribution_rewards_submission[round],
+          // );
+          const submitterList =
+            distributionData.distribution_rewards_submission[round];
+          const submitterKeys = Object.keys(submitterList);
+          // console.log('SUBMITTER KEYS', submitterKeys);
+          const submitterSize = submitterKeys.length;
+          // console.log('SUBMITTER SIZE', submitterSize);
+
+          for (let j = 0; j < submitterSize; j++) {
+            // console.log('SUBMITTER KEY CANDIDATE', submitterKeys[j]);
+            const id = keys.indexOf(submitterKeys[j]);
+            // console.log('ID', id);
+            if (id != -1) {
+              keys.splice(id, 1);
+              values.splice(id, 1);
+              size--;
+            }
+          }
+
+          // console.log('KEYS FOR HASH CALC', keys.length);
         }
       } catch (error) {
-        console.error('Error in getting submissions for the round', error);
+        console.log('Error in getting distribution data', error);
       }
-      return new Set();
-    }
-  });
-
-  const keySets = await Promise.all(promises);
-
-  // Find the keys present in all the rounds
-  keys =
-    keySets.length > 0
-      ? [...keySets[0]].filter(key => keySets.every(set => set.has(key)))
-      : [];
-  if (keys.length == 0) {
-    console.log('No common keys found in last 3 rounds');
-    keys = Object.keys(submissions);
-  }
-  // console.log('KEYS', keys.length);
-  const values = keys.map(key => submissions[key]);
-
-  let size = keys.length;
-  console.log('Submissions from N-2  round: ', size);
-
-  // Check the keys i.e if the submitter shall be excluded or not
-  try {
-    const distributionData = await this.getTaskDistributionInfo(round);
-    const audit_record = distributionData?.distributions_audit_record;
-    if (audit_record && audit_record[round] == 'PayoutFailed') {
-      // console.log('ROUND DATA', audit_record[round]);
-      // console.log(
-      //   'SUBMITTER LIST',
-      //   distributionData.distribution_rewards_submission[round],
-      // );
-      const submitterList =
-        distributionData.distribution_rewards_submission[round];
-      const submitterKeys = Object.keys(submitterList);
-      // console.log('SUBMITTER KEYS', submitterKeys);
-      const submitterSize = submitterKeys.length;
-      // console.log('SUBMITTER SIZE', submitterSize);
-
-      for (let j = 0; j < submitterSize; j++) {
-        // console.log('SUBMITTER KEY CANDIDATE', submitterKeys[j]);
-        const id = keys.indexOf(submitterKeys[j]);
-        // console.log('ID', id);
-        if (id != -1) {
-          keys.splice(id, 1);
-          values.splice(id, 1);
-          size--;
-        }
-      }
-
-      // console.log('KEYS FOR HASH CALC', keys.length);
-    }
-  } catch (error) {
-    console.log('Error in getting distribution data', error);
-  }
       // calculating the digest
 
       const ValuesString = JSON.stringify(values);
@@ -1029,13 +1014,17 @@ class NamespaceWrapper {
     }
   }
 
-  async selectAndGenerateDistributionList(submitDistributionList, round, isPreviousRoundFailed) {
+  async selectAndGenerateDistributionList(
+    submitDistributionList,
+    round,
+    isPreviousRoundFailed,
+  ) {
     console.log('SelectAndGenerateDistributionList called');
     const selectedNode = await this.nodeSelectionDistributionList(
       round,
       isPreviousRoundFailed,
     );
-    console.log('Selected Node', selectedNode);
+    // console.log('Selected Node', selectedNode);
     const submitPubKey = await this.getSubmitterAccount();
     if (
       selectedNode == undefined ||
@@ -1084,11 +1073,16 @@ async function genericHandler(...args) {
     }
   } catch (err) {
     const responseData = err?.response?.data?.message;
-    if ((args[0] === 'getTaskSubmissionInfo' || args[0] === 'getTaskDistributionInfo') && 
-    responseData && typeof responseData === 'string' && responseData.includes('Task does not have any')) {
+    if (
+      (args[0] === 'getTaskSubmissionInfo' ||
+        args[0] === 'getTaskDistributionInfo') &&
+      responseData &&
+      typeof responseData === 'string' &&
+      responseData.includes('Task does not have any')
+    ) {
       console.log(`Error in genericHandler: "${args[0]}"`, err.message);
       console.log(err?.response?.data);
-    }else{
+    } else {
       console.error(`Error in genericHandler: "${args[0]}"`, err.message);
       console.error(err?.response?.data);
       return { error: err };

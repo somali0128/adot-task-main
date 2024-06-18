@@ -8,7 +8,8 @@ const Data = require('../../model/data');
 const PCR = require('puppeteer-chromium-resolver');
 const { namespaceWrapper } = require('../../namespaceWrapper');
 const fs = require('fs');
-
+const path = require('path');
+const rimraf = require('rimraf');
 /**
  * Twitter
  * @class
@@ -74,15 +75,27 @@ class Twitter extends Adapter {
         console.log('Old browser closed');
       }
       const options = {};
+      const userDataDir = path.join(__dirname, 'puppeteer_cache_koii_twitter_adot');
       const stats = await PCR(options);
       console.log(
         '*****************************************CALLED PURCHROMIUM RESOLVER*****************************************',
       );
       this.browser = await stats.puppeteer.launch({
+        executablePath: stats.executablePath,
+        userDataDir: userDataDir,
         // headless: false,
         userAgent:
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
+        args: [
+          '--aggressive-cache-discard',
+          '--disable-cache',
+          '--disable-application-cache',
+          '--disable-offline-load-stale-cache',
+          '--disable-gpu-shader-disk-cache',
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-gpu',
+        ],
         executablePath: stats.executablePath,
       });
       console.log('Step: Open new page');
@@ -460,8 +473,9 @@ class Twitter extends Adapter {
 
       // Wait an additional 5 seconds until fully loaded before scraping
       await this.page.waitForTimeout(5000);
-
+      let i = 0;
       while (true) {
+        i++;
         // Check if the error message is present on the page inside an article element
         const errorMessage = await this.page.evaluate(() => {
           const elements = document.querySelectorAll('div[dir="ltr"]');
@@ -499,7 +513,7 @@ class Twitter extends Adapter {
                 // Store the item in the database
                 // const cid = await storeFiles(data, this.w3sKey);
                 // const cid = 'testcid';
-                console.log(`Storing data for ${data.tweets_id}`);
+                // console.log(`Storing data for ${data.tweets_id}`);
                 this.cids.create({
                   id: data.tweets_id,
                   round: round,
@@ -515,8 +529,15 @@ class Twitter extends Adapter {
         }
         try {
           let dataLength = (await this.cids.getList({ round: round })).length;
-          console.log('Already scraped', dataLength, 'in round', round);
-          if (dataLength > 120) {
+          console.log(
+            'Already scraped',
+            dataLength,
+            'and',
+            i,
+            'times in round',
+            round,
+          );
+          if (dataLength > 120 || i > 4) {
             console.log('reach maixmum data per round, closed old browser');
             this.browser.close();
             break;
