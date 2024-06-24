@@ -178,7 +178,7 @@ class Twitter extends Adapter {
         await this.page.keyboard.press('Enter');
 
         // TODO - catch unsuccessful login and retry up to query.maxRetry
-        if (!(await this.isPasswordCorrect(this.page, currentURL))) {
+        if (!(await this.checkLogin())) {
           console.log('Password is incorrect or email verfication needed.');
           await this.page.waitForTimeout(5000);
           this.sessionValid = false;
@@ -201,7 +201,7 @@ class Twitter extends Adapter {
           // Save cookies to database
           await this.saveCookiesToDB(cookies);
         }
-
+          
         return this.sessionValid;
       }
     } catch (e) {
@@ -259,16 +259,39 @@ class Twitter extends Adapter {
     }
   };
 
-  isPasswordCorrect = async (page, currentURL) => {
-    await this.page.waitForTimeout(5000);
+  // isPasswordCorrect = async (page, currentURL) => {
+  //   await this.page.waitForTimeout(5000);
 
-    const newURL = await this.page.url();
-    if (newURL === currentURL) {
-      return false;
+  //   const newURL = await this.page.url();
+  //   if (newURL === currentURL) {
+  //     return false;
+  //   }
+  //   return true;
+  // };
+
+
+  checkLogin = async () => {  
+
+    const newPage = await this.browser.newPage(); // Create a new page
+    await newPage.goto('https://twitter.com/home');
+    await newPage.waitForTimeout(5000);
+    // Replace the selector with a Twitter-specific element that indicates a logged-in state
+    const isLoggedIn =
+      (await newPage.url()) !==
+      'https://twitter.com/i/flow/login?redirect_after_login=%2Fhome';
+    if (isLoggedIn) {
+      console.log('Logged in using existing cookies');
+      console.log('Updating last session check');
+      this.sessionValid = true;
+    } else {
+      console.log('No valid cookies found, proceeding with manual login');
+      this.sessionValid = false;
     }
-    return true;
-  };
+    await newPage.close(); // Close the new page
+    return this.sessionValid;
 
+  };
+  
   isEmailVerificationRequired = async page => {
     // Wait for some time to allow the page to load the required elements
     await page.waitForTimeout(5000);
