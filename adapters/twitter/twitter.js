@@ -75,7 +75,7 @@ class Twitter extends Adapter {
         console.log('Old browser closed');
       }
       const options = {};
-      const userDataDir = path.join(__dirname, 'puppeteer_cache_koii_twitter_archive');
+      const userDataDir = path.join(__dirname, 'puppeteer_cache_koii_twitter_adot');
       const stats = await PCR(options);
       console.log(
         '*****************************************CALLED PURCHROMIUM RESOLVER*****************************************',
@@ -536,7 +536,7 @@ class Twitter extends Adapter {
                 // Store the item in the database
                 // const cid = await storeFiles(data, this.w3sKey);
                 // const cid = 'testcid';
-                console.log(`Storing data for ${data.tweets_id}`);
+                // console.log(`Storing data for ${data.tweets_id}`);
                 this.cids.create({
                   id: data.tweets_id,
                   round: round,
