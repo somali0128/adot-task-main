@@ -2,8 +2,8 @@ const Data = require("../model/data");
 
 // Tests for the Data class
 const datadb = new Data("test", []);
-const item = {"id":"https://twitter.com/NFTindonesia_/status/1686549268784611329?s=20","timestamp":1692037658873,"round":4,"cid":"cid"}
-const id = "https://twitter.com/TzApac/status/1687336801760059393"
+const item = {"id":"https://x.com/NFTindonesia_/status/1686549268784611329?s=20","timestamp":1692037658873,"round":4,"cid":"cid"}
+const id = "https://x.com/TzApac/status/1687336801760059393"
 async function test() {
   await datadb.initializeData();
 
