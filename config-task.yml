@@ -56,4 +56,4 @@ requirementsTags:
 task_id: 'H87zW6HZoFrvTpy6oZ3BuWQvUuukRTmWSYm58ndYat48'
 
 # Provide the description for changes made in new version of task
-migrationDescription: 'Adot Task Update to 5000 KOII per round.'
+migrationDescription: 'Fixed Login Issue'
