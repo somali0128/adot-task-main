@@ -112,8 +112,8 @@ class CoreLogic {
               // to do so we need to fetch the stakes of the candidate from the task state
               const stake_list = taskStakeListJSON.stake_list;
               const candidateStake = stake_list[candidatePublicKey];
-              const slashedStake = candidateStake * 0.7;
-              distributionList[candidatePublicKey] = -slashedStake;
+              const slashedStake = candidateStake * 0;
+              distributionList[candidatePublicKey] = 0;
               // console.log('Candidate Stake', candidateStake);
             } else {
               let numOfVotes = 0;
@@ -128,8 +128,8 @@ class CoreLogic {
                 // to do so we need to fetch the stakes of the candidate from the task state
                 const stake_list = taskStakeListJSON.stake_list;
                 const candidateStake = stake_list[candidatePublicKey];
-                const slashedStake = candidateStake * 0.7;
-                distributionList[candidatePublicKey] = -slashedStake;
+                const slashedStake = candidateStake * 0;
+                distributionList[candidatePublicKey] = 0;
                 // console.log('Candidate Stake', candidateStake);
               }
 
