@@ -180,16 +180,16 @@ class Twitter extends Adapter {
         await this.page.waitForTimeout(await this.randomDelay(3000));
         if (!(await this.checkLogin())) {
           console.log('Password is incorrect or email verfication needed.');
-          await page.waitForTimeout(await this.randomDelay(5000));
+          await this.page.waitForTimeout(await this.randomDelay(5000));
           this.sessionValid = false;
         } else if (await this.isEmailVerificationRequired(this.page)) {
           console.log('Email verification required.');
           this.sessionValid = false;
-          await page.waitForTimeout(await this.randomDelay(1000000));
+          await this.page.waitForTimeout(await this.randomDelay(1000000));
         } else {
           console.log('Password is correct.');
           this.page.waitForNavigation({ waitUntil: 'load' });
-          await page.waitForTimeout(await this.randomDelay(5000));
+          await this.page.waitForTimeout(await this.randomDelay(5000));
 
           this.sessionValid = true;
           this.lastSessionCheck = Date.now();
@@ -219,7 +219,7 @@ class Twitter extends Adapter {
 
       await this.page.goto('https://x.com/home');
 
-      await page.waitForTimeout(await this.randomDelay(5000));
+      await this.page.waitForTimeout(await this.randomDelay(5000));
 
       // Replace the selector with a Twitter-specific element that indicates a logged-in state
       // This is just an example; you'll need to determine the correct selector for your case
@@ -774,7 +774,6 @@ verify = async (tweetid, inputitem) => {
     
   } catch (e) {
     console.log('Error fetching single item', e);
-    auditBrowser.close();
     return false; // Return false in case of an exception
   }
 };
