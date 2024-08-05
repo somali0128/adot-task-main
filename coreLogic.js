@@ -310,19 +310,21 @@ class CoreLogic {
   async submitTask(roundNumber) {
     console.log('submitTask called with round', roundNumber);
     try {
-      // console.log('inside try');
-      console.log(
-        await namespaceWrapper.getSlot(),
-        'current slot while calling submit',
-      );
+      console.log('inside try');
+      const taskState = await namespaceWrapper.getTaskState({});
+      const roundBeginSlot =
+        taskState.starting_slot + roundNumber * taskState.round_time;
       const submission = await this.fetchSubmission(roundNumber);
+      console.log('SUBMISSION', submission);
+      const currentSlot = await namespaceWrapper.getSlot();
+      console.log('current slot while calling submit', currentSlot);
+      // wait for end of the submission window
+      new Promise(resolve => setTimeout(resolve, (roundBeginSlot + taskState.submission_window - currentSlot) * 408));
       if (submission) {
-        console.log('SUBMISSION', submission);
         await namespaceWrapper.checkSubmissionAndUpdateRound(
           submission,
           roundNumber,
         );
-        console.log('after the submission call');
       } else {
         console.log('no submission call made as submission is null');
       }
