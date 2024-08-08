@@ -43,6 +43,9 @@ requirementsTags:
   - type: TASK_VARIABLE
     value: 'TWITTER_PASSWORD'
     description: 'The password of your volunteer Twitter account.'
+  - type: TASK_VARIABLE
+    value: 'TWITTER_PHONE'
+    description: 'The verification of your volunteer Twitter account. If you not sure about the phone number, please enter your email address.'
   - type: CPU
     value: '4-core'
   - type: RAM
