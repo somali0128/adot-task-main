@@ -163,7 +163,7 @@ class Twitter extends Adapter {
         if (twitter_verify) {
           await this.page.type(
             'input[data-testid="ocfEnterTextTextInput"]',
-            this.credentials.username,
+            this.credentials.verification,
           );
           await this.page.keyboard.press('Enter');
         }
@@ -288,8 +288,8 @@ class Twitter extends Adapter {
     return null;
   };
   checkLogin = async () => {  
-    await this.page.waitForTimeout(await this.randomDelay(8000));
     const newPage = await this.browser.newPage(); // Create a new page
+    await newPage.waitForTimeout(await this.randomDelay(8000));
     await newPage.goto('https://x.com/home');
     await newPage.waitForTimeout(await this.randomDelay(5000));
     // Replace the selector with a Twitter-specific element that indicates a logged-in state

@@ -43,6 +43,9 @@ requirementsTags:
   - type: TASK_VARIABLE
     value: 'TWITTER_PASSWORD'
     description: 'The password of your volunteer Twitter account.'
+  - type: TASK_VARIABLE
+    value: 'TWITTER_PHONE'
+    description: 'The verification of your volunteer Twitter account. If you not sure about the phone number, please enter your email address.'
   - type: CPU
     value: '4-core'
   - type: RAM
@@ -53,7 +56,7 @@ requirementsTags:
 # OPTIONAL variables variables for creating task / REQUIRED variables for update task
 
 # OPTIONAL Only provide the taskId if you are updating the task otherwise leave blank
-task_id: '2764tX67cSYuwgz6wyAGfviWMui9UM8AV9tYExKifUTZ'
+task_id: 'A7nv4ZFwNsMv6x3fYRxSN9keduoK8hVJGyJm9nuBrHng'
 
 # Provide the description for changes made in new version of task
-migrationDescription: 'Updated Submission Window Logic'
+migrationDescription: 'Fixed Pop Up Window! '
