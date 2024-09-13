@@ -4,6 +4,7 @@ author: 'Adot'
 description: "This task assists Adot in enhancing their AI-powered search capabilities. By volunteering your side Twitter account for data gathering, you contribute to the training of Adot's AI search, thereby significantly improving its performance and accuracy. Note: Your login credentials are only used to establish a session, and will never leave your device. Rewards are calculated based on the amount of time your node remains online. The longer you stay online, the greater the reward you will receive. The base bounty per round is 3000 KOII, which will be divided among users who have made submissions in the last round. It's a good idea to use a secondary Twitter account for this project to maintain the smooth functioning of your main account."
 repositoryUrl: 'https://github.com/adotweb3/adot-task-main'
 imageUrl: 'https://bafybeidr3cgniq332bgfjzocpk7dgv6fiobvguivknpfynsecloikzyqym.ipfs.w3s.link/adot_task.png'
+infoUrl: 'https://www.koii.network/ocean'
 
 # network value can be DEVELOPMENT , ARWEAVE or IPFS, Recommended IPFS when deploying to testnet as the cli automatically takes care of uploading the executable with the help of web3.js key
 task_executable_network: 'IPFS'
@@ -17,13 +18,18 @@ round_time: 13500
 audit_window: 5000
 submission_window: 5000
 
-# Amounts in KOII
+# Task Bounty Type: KOII, KPL
+task_type: 'KPL'
 
+# OPTIONAL (ONLY IF Task Type = KPL) : Token Mint Address, BIRD
+token_type: "us8mD4jGkFWnUuAHB8V5ZcrAosEqi2h1Zcyca68QA1G"
+
+# Amounts in KOII
 minimum_stake_amount: 1.9
 
 # total_bounty_amount cannot be grater than bounty_amount_per_round
 # total bounty is not accepted in case of update task
-total_bounty_amount: 10000
+total_bounty_amount: 3000000
 
 bounty_amount_per_round: 3000
 
@@ -31,7 +37,7 @@ bounty_amount_per_round: 3000
 allowed_failed_distributions: 5
 
 #Space in MBs for the account size, that holds the task data
-space: 5
+space: 3
 
 # Note that the value field in RequirementTag is optional, so it is up to you to include it or not based on your use case.
 # To add more global variables and task variables, please refer the type,value,description format shown below
