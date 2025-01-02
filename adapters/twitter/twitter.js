@@ -83,7 +83,7 @@ class Twitter extends Adapter {
       );
       this.browser = await stats.puppeteer.launch({
         executablePath: stats.executablePath,
-        userDataDir: userDataDir,
+        // userDataDir: userDataDir,
         // headless: false,
         userAgent:
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -711,7 +711,7 @@ verify = async (tweetid, inputitem) => {
     const stats = await PCR(options);
     let auditBrowser = await stats.puppeteer.launch({
       executablePath: stats.executablePath,
-      userDataDir: userAuditDir,
+      // userDataDir: userAuditDir,
       // headless: false,
       userAgent:
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
